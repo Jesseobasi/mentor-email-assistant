@@ -1,0 +1,42 @@
+name: Mentor Email Assistant Schedule
+
+on:
+  schedule:
+    # Run at 8:00 AM UTC on the 1st of the month AND on Mondays
+    - cron: '0 8 1 * 1'
+  workflow_dispatch: # Allow manual triggers from the GitHub UI
+
+jobs:
+  run-assistant:
+    runs-on: ubuntu-latest
+    
+    # We need permissions to commit the processed.json file back to the repository
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Use modern Node.js
+          
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Mentor Email Assistant
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+          GROUP_EMAIL: ${{ secrets.GROUP_EMAIL }}
+        run: npm start
+
+      - name: Commit processed.json changes
+        # This step saves the processed emails list so we don't process them again next week
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update processed emails [skip ci]"
+          file_pattern: 'processed.json'
