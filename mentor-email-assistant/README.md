@@ -32,13 +32,24 @@ To keep your passwords safe, you must add them to GitHub Secrets.
 ### Step 4: Turn on the Automation!
 1. Go to the **Actions** tab in your repository.
 2. Click on **Mentor Email Assistant Schedule** on the left.
-3. Click the **Run workflow** dropdown and run it!
-From now on, GitHub will automatically run the assistant for you every Monday at 8:00 AM UTC and on the 1st of the month.
+3. Click the **Run workflow** dropdown
+4. **Updating the Calendar**: The assistant stores the calendar dates internally. When a new semester or academic year begins:
+   - Download the new Academic Calendar PDF from Morgan State's website.
+   - Rename the file to `calendar.pdf`.
+   - Upload the file to the root of this GitHub repository.
+   - A GitHub Action will automatically process the PDF using AI and permanently update the internal calendar database.
 
----
+## Running Locally
 
-## 💻 Option 2: The Local Setup (For Developers)
-If you want to run the assistant locally on your own computer or test changes to the code:
+To run the assistant locally on your own machine:
+
+1. Copy `.env.example` to `.env` and fill in your actual credentials.
+2. Ensure you have the `calendar_database.json` file populated (or upload `calendar.pdf` to let the AI build it).
+3. Run the script:
+```bash
+npm install
+npm start
+```
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (Version 18 or higher)
