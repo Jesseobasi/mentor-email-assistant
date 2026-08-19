@@ -35,6 +35,7 @@ jobs:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
           GROUP_EMAIL: ${{ secrets.GROUP_EMAIL }}
+          FORCE_RUN: 'true'
         run: npm start
 
       - name: Commit processed.json changes

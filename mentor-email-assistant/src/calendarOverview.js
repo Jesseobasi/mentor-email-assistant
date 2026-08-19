@@ -120,16 +120,16 @@ export async function processCalendarReminders(scrapedEmails = []) {
   const dayOfMonth = today.getDate(); // 1-31
 
   // 1. Monthly Overview (Trigger on the 1st of the month)
-  if (dayOfMonth === 1) {
-    console.log("Triggering Monthly Overview...");
+  if (dayOfMonth === 1 || process.env.FORCE_RUN === 'true') {
+    console.log("Triggering Overview (Monthly/Forced)...");
     const upcomingEvents = getUpcomingEvents(30);
     const html = formatCalendarOverviewHtml('Monthly Academic Overview', upcomingEvents, scrapedEmails);
     await sendToGroup('Monthly Academic Overview', html);
   }
 
   // 2. Weekly Reminder (Trigger every Monday)
-  // We skip sending a weekly reminder if we just sent the monthly overview today
-  else if (dayOfWeek === 1) {
+  // We skip sending a weekly reminder if we just sent the monthly overview today (unless forced)
+  else if (dayOfWeek === 1 && process.env.FORCE_RUN !== 'true') {
     console.log("Triggering Weekly Reminder...");
     const upcomingEvents = getUpcomingEvents(7);
     if (upcomingEvents.length > 0 || scrapedEmails.length > 0) {
@@ -138,7 +138,7 @@ export async function processCalendarReminders(scrapedEmails = []) {
     } else {
       console.log("No upcoming events or scraped emails this week. Skipping email.");
     }
-  } else {
+  } else if (process.env.FORCE_RUN !== 'true') {
     console.log("No calendar overview scheduled for today.");
   }
 }

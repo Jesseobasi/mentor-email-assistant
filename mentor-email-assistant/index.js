@@ -24,8 +24,8 @@ const processEmailsAndCalendar = async () => {
     let scrapedEmails = [];
     
     // 1. Incoming email scraper (Runs on Mondays, gathers emails)
-    if (dayOfWeek === 1) {
-      console.log('Today is Monday. Scraping unread emails first...');
+    if (dayOfWeek === 1 || process.env.FORCE_RUN === 'true') {
+      console.log('Scraping unread emails...');
       scrapedEmails = await scrapeAndProcessEmails();
     } else {
       console.log('Incoming email scraping is skipped (only runs on Mondays).');
