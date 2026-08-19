@@ -37,7 +37,6 @@ jobs:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
           GROUP_EMAIL: ${{ secrets.GROUP_EMAIL }}
-          CALENDAR_CSV_URL: ${{ secrets.CALENDAR_CSV_URL }}
           FORCE_RUN: 'true'
         run: npm start
 
