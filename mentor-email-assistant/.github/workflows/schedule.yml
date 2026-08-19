@@ -5,6 +5,9 @@ on:
     # Run at 8:00 AM UTC on the 1st of the month AND on Mondays
     - cron: '0 8 1 * 1'
   workflow_dispatch: # Allow manual triggers from the GitHub UI
+  push:
+    branches:
+      - main
 
 jobs:
   run-assistant:
