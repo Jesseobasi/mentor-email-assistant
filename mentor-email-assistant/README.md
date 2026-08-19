@@ -32,12 +32,16 @@ To keep your passwords safe, you must add them to GitHub Secrets.
 ### Step 4: Turn on the Automation!
 1. Go to the **Actions** tab in your repository.
 2. Click on **Mentor Email Assistant Schedule** on the left.
-3. Click the **Run workflow** dropdown
-4. **Updating the Calendar**: The assistant stores the calendar dates internally. When a new semester or academic year begins:
-   - Download the new Academic Calendar PDF from Morgan State's website.
-   - Rename the file to `calendar.pdf`.
-   - Upload the file to the root of this GitHub repository.
-   - A GitHub Action will automatically process the PDF using AI and permanently update the internal calendar database.
+3. Click the **Run workflow** dropdown and run it!
+From now on, GitHub will automatically run the assistant for you every Monday at 8:00 AM UTC and on the 1st of the month.
+
+### Step 5: Updating the Academic Calendar
+The assistant stores the calendar dates internally to stay fast and avoid university firewalls. When a new semester or academic year begins:
+1. Download the new Academic Calendar PDF from Morgan State's website.
+2. Rename the file to exactly `calendar.pdf`.
+3. Go to the `<> Code` tab in your GitHub repository and click **Add file > Upload files**.
+4. Drag and drop your `calendar.pdf` and commit the change.
+A GitHub Action will instantly process the PDF using AI and permanently update your internal calendar database!
 
 ## Running Locally
 
