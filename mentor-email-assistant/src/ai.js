@@ -49,7 +49,4 @@ Instructions:
   }
 };
 
-export const generateReply = async (emailContent) => {
-  // Not used or supported in the free tier
-  return 'Thank you for your email.';
-};
+

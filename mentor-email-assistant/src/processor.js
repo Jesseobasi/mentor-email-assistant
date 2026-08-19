@@ -1,5 +1,5 @@
 import { summarizeEmail } from './ai.js';
-import { sendToGroup } from './mailer.js';
+
 import { getProcessedEmails, markAsProcessed } from './storage.js';
 import { fetchUnreadEmails } from './imapReader.js';
 
