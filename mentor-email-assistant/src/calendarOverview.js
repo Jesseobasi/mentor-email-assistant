@@ -1,4 +1,4 @@
-import { academicCalendar } from './data/calendarData.js';
+import { fetchAcademicCalendar } from './data/calendarData.js';
 import { sendToGroup } from './mailer.js';
 
 function isDateInRange(dateStr, startDate, endDate) {
@@ -12,10 +12,12 @@ function isDateInRange(dateStr, startDate, endDate) {
   return date >= start && date <= end;
 }
 
-export function getUpcomingEvents(days, targetDate = new Date()) {
+export async function getUpcomingEvents(days, targetDate = new Date()) {
   const today = new Date(targetDate);
   const endDate = new Date(today);
   endDate.setDate(today.getDate() + days);
+
+  const academicCalendar = await fetchAcademicCalendar();
 
   return academicCalendar.filter(event => {
     const eventStart = new Date(event.date);
@@ -122,16 +124,20 @@ export async function processCalendarReminders(scrapedEmails = []) {
   // 1. Monthly Overview (Trigger on the 1st of the month)
   if (dayOfMonth === 1 || process.env.FORCE_RUN === 'true') {
     console.log("Triggering Overview (Monthly/Forced)...");
-    const upcomingEvents = getUpcomingEvents(30);
-    const html = formatCalendarOverviewHtml('Monthly Academic Overview', upcomingEvents, scrapedEmails);
-    await sendToGroup('Monthly Academic Overview', html);
+    const upcomingEvents = await getUpcomingEvents(30);
+    if (upcomingEvents.length > 0 || scrapedEmails.length > 0) {
+      const html = formatCalendarOverviewHtml('Monthly Academic Overview', upcomingEvents, scrapedEmails);
+      await sendToGroup('Monthly Academic Overview', html);
+    } else {
+      console.log("No upcoming events or scraped emails this month. Skipping email.");
+    }
   }
 
   // 2. Weekly Reminder (Trigger every Monday)
   // We skip sending a weekly reminder if we just sent the monthly overview today (unless forced)
   else if (dayOfWeek === 1 && process.env.FORCE_RUN !== 'true') {
     console.log("Triggering Weekly Reminder...");
-    const upcomingEvents = getUpcomingEvents(7);
+    const upcomingEvents = await getUpcomingEvents(7);
     if (upcomingEvents.length > 0 || scrapedEmails.length > 0) {
       const html = formatCalendarOverviewHtml('Weekly Academic Reminder', upcomingEvents, scrapedEmails);
       await sendToGroup('Weekly Academic Reminder', html);
