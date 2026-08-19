@@ -45,6 +45,17 @@ export const fetchUnreadEmails = async () => {
         // Parse the raw email source into usable text/html
         const parsed = await simpleParser(message.source);
         
+        // Filter: Only process emails from morgan.edu
+        let senderEmail = '';
+        if (parsed.from && parsed.from.value && parsed.from.value.length > 0) {
+          senderEmail = parsed.from.value[0].address || '';
+        }
+        
+        if (!senderEmail.toLowerCase().endsWith('@morgan.edu')) {
+          console.log(`Ignoring email from outside Morgan State: ${senderEmail}`);
+          continue;
+        }
+        
         unreadEmails.push({
           id: message.uid.toString(),
           subject: parsed.subject || '(No Subject)',

@@ -1,42 +1,51 @@
+import { GoogleGenAI, Type } from '@google/genai';
+import 'dotenv/config';
+
+// Initialize the API client. It automatically uses process.env.GEMINI_API_KEY
+const ai = new GoogleGenAI();
+
 export const summarizeEmail = async (emailText, emailSubject) => {
-  // Simple heuristic/template approach without using AI
   try {
-    const summary = emailText && emailText.trim() ? emailText.substring(0, 300) + (emailText.length > 300 ? '...' : '') : 'No content available.';
-    
-    const notes = [];
-    
-    // Extract Links
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const links = emailText ? emailText.match(urlRegex) || [] : [];
-    const uniqueLinks = [...new Set(links)];
-    if (uniqueLinks.length > 0) {
-      notes.push(`Links: ${uniqueLinks.slice(0, 3).join(', ')}`);
-    }
+    const prompt = `You are a mentor assistant analyzing an email from Morgan State University.
+The email subject is: "${emailSubject}"
+The email body is:
+"""
+${emailText}
+"""
 
-    // Extract Deadlines
-    const lines = emailText ? emailText.split('\n') : [];
-    const deadlines = lines.filter(line => 
-      line.toLowerCase().includes('deadline') || 
-      line.toLowerCase().includes('due by') || 
-      line.toLowerCase().includes('due on')
-    );
-    if (deadlines.length > 0) {
-      notes.push(`Important Deadline Info: ${deadlines[0].trim().substring(0, 100)}`);
-    }
+Instructions:
+1. Summarize the announcement for a group of mentees.
+2. STRICTLY REDACT and remove any Personally Identifiable Information (PII) including student names, ID numbers, grades, GPA, or personal academic/disciplinary situations.
+3. If the email contains highly sensitive personal information that cannot be generalized safely, set urgency to "Skip" to drop the email.
+4. Extract any important links and deadlines into the notes array.
+5. Provide urgency as either "High" (important deadlines/opportunities), "Medium" (general info), or "Skip" (highly sensitive or irrelevant spam).
+`;
 
-    return {
-      title: emailSubject || 'New Announcement',
-      type: 'Announcement',
-      urgency: deadlines.length > 0 ? 'High' : 'Medium',
-      date: 'Not specified',
-      time: 'Not specified',
-      location: 'Not specified',
-      summary: summary,
-      notes: notes
-    };
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING, description: "A short, engaging title for the summary" },
+            type: { type: Type.STRING, description: "Type of email e.g., Announcement, Event, Deadline" },
+            urgency: { type: Type.STRING, description: "Either 'High', 'Medium', or 'Skip'" },
+            summary: { type: Type.STRING, description: "A concise summary of the email with all PII completely redacted." },
+            notes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Array of extracted links or deadlines" }
+          },
+          required: ["title", "type", "urgency", "summary", "notes"]
+        }
+      }
+    });
+
+    const parsedResponse = JSON.parse(response.text);
+    return parsedResponse;
   } catch (error) {
-    console.error('Failed to summarize email:', error);
-    throw error;
+    console.error('Failed to summarize email using Gemini:', error);
+    // Fallback to safe skip if AI fails
+    return { urgency: 'Skip' };
   }
 };
 

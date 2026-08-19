@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/genai": "^2.17.1",
     "dotenv": "^17.4.2",
     "imapflow": "^1.7.1",
     "mailparser": "^3.9.15",

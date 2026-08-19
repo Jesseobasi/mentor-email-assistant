@@ -38,6 +38,8 @@ export const scrapeAndProcessEmails = async () => {
         if (summaryJson.urgency === 'High') {
           scrapedSummaries.push(summaryJson);
           console.log(`Successfully extracted and aggregated HIGH priority email: ${email.id}`);
+        } else if (summaryJson.urgency === 'Skip') {
+          console.log(`Skipping highly sensitive or spam email: ${email.id}`);
         } else {
           console.log(`Skipping low/medium priority email: ${email.id}`);
         }
