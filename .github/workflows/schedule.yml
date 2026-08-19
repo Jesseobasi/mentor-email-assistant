@@ -27,9 +27,11 @@ jobs:
           node-version: '20' # Use modern Node.js
           
       - name: Install dependencies
+        working-directory: ./mentor-email-assistant
         run: npm install
 
       - name: Run Mentor Email Assistant
+        working-directory: ./mentor-email-assistant
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
@@ -43,4 +45,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update processed emails [skip ci]"
-          file_pattern: 'processed.json'
+          file_pattern: 'mentor-email-assistant/processed.json'
