@@ -2,7 +2,7 @@ import { GoogleGenAI, Type } from '@google/genai';
 import 'dotenv/config';
 
 // Initialize the API client. It automatically uses process.env.GEMINI_API_KEY
-const ai = new GoogleGenAI();
+const ai = new GoogleGenAI({});
 
 export const summarizeEmail = async (emailText, emailSubject) => {
   try {

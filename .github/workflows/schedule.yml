@@ -24,7 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Use modern Node.js
+          node-version: '24' # Use modern Node.js
           
       - name: Install dependencies
         working-directory: ./mentor-email-assistant
