@@ -14,6 +14,7 @@ function isDateInRange(dateStr, startDate, endDate) {
 
 export async function getUpcomingEvents(days, targetDate = new Date()) {
   const today = new Date(targetDate);
+  today.setHours(0, 0, 0, 0);
   const endDate = new Date(today);
   endDate.setDate(today.getDate() + days);
 

@@ -14,7 +14,7 @@ async function parseCalendar() {
     return;
   }
 
-  const ai = new GoogleGenAI({});
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
   const pdfBase64 = fs.readFileSync(pdfPath).toString('base64');
 
