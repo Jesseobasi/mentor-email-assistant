@@ -126,7 +126,7 @@ export async function processCalendarReminders(scrapedEmails = []) {
   if (dayOfMonth === 1 || process.env.FORCE_RUN === 'true') {
     console.log("Triggering Overview (Monthly/Forced)...");
     const upcomingEvents = await getUpcomingEvents(30);
-    if (upcomingEvents.length > 0 || scrapedEmails.length > 0) {
+    if (upcomingEvents.length > 0 || scrapedEmails.length > 0 || process.env.FORCE_RUN === 'true') {
       const html = formatCalendarOverviewHtml('Monthly Academic Overview', upcomingEvents, scrapedEmails);
       await sendToGroup('Monthly Academic Overview', html);
     } else {
