@@ -3,7 +3,8 @@ name: Update Calendar Database
 on:
   push:
     paths:
-      - 'calendar.pdf'
+      - 'mentor-email-assistant/calendar.pdf'
+  workflow_dispatch:
 
 jobs:
   parse-calendar:
