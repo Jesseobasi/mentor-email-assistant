@@ -66,19 +66,37 @@ export function formatCalendarOverviewHtml(title, events, scrapedEmails = []) {
   if (events.length === 0) {
     html += `<p style="text-align: center; color: #94a3b8; margin-bottom: 32px;">No upcoming academic events in this period.</p>`;
   } else {
-    html += `<ul class="event-list">`;
+    const getWeekName = (dateStr) => {
+      const date = new Date(dateStr + "T00:00:00");
+      const day = date.getDay();
+      const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(date.getFullYear(), date.getMonth(), diff);
+      return `Week of ${monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+    };
+
+    const groupedEvents = {};
     events.forEach(event => {
-      const dateDisplay = event.endDate 
-        ? `${event.date} to ${event.endDate}` 
-        : event.date;
-      
-      html += `
-        <li class="event-item">
-          <div class="event-date">${safeStr(dateDisplay)}</div>
-          <h3 class="event-name">${safeStr(event.name)}</h3>
-        </li>`;
+      const weekName = getWeekName(event.date);
+      if (!groupedEvents[weekName]) groupedEvents[weekName] = [];
+      groupedEvents[weekName].push(event);
     });
-    html += `</ul>`;
+
+    Object.entries(groupedEvents).forEach(([weekName, weekEvents]) => {
+      html += `<h3 style="color: #93c5fd; font-size: 15px; margin-top: 24px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px dashed #4a4a4a; padding-bottom: 4px;">📅 ${weekName}</h3>`;
+      html += `<ul class="event-list" style="margin-bottom: 16px;">`;
+      weekEvents.forEach(event => {
+        const dateDisplay = event.endDate 
+          ? `${event.date} to ${event.endDate}` 
+          : event.date;
+        
+        html += `
+          <li class="event-item">
+            <div class="event-date">${safeStr(dateDisplay)}</div>
+            <h3 class="event-name">${safeStr(event.name)}</h3>
+          </li>`;
+      });
+      html += `</ul>`;
+    });
   }
 
   // Scraped Emails Section
