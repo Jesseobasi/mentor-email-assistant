@@ -66,37 +66,19 @@ export function formatCalendarOverviewHtml(title, events, scrapedEmails = []) {
   if (events.length === 0) {
     html += `<p style="text-align: center; color: #94a3b8; margin-bottom: 32px;">No upcoming academic events in this period.</p>`;
   } else {
-    const getWeekName = (dateStr) => {
-      const date = new Date(dateStr + "T00:00:00");
-      const day = date.getDay();
-      const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(date.getFullYear(), date.getMonth(), diff);
-      return `Week of ${monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-    };
-
-    const groupedEvents = {};
+    html += `<ul class="event-list">`;
     events.forEach(event => {
-      const weekName = getWeekName(event.date);
-      if (!groupedEvents[weekName]) groupedEvents[weekName] = [];
-      groupedEvents[weekName].push(event);
+      const dateDisplay = event.endDate 
+        ? `${event.date} to ${event.endDate}` 
+        : event.date;
+      
+      html += `
+        <li class="event-item">
+          <div class="event-date">${safeStr(dateDisplay)}</div>
+          <h3 class="event-name">${safeStr(event.name)}</h3>
+        </li>`;
     });
-
-    Object.entries(groupedEvents).forEach(([weekName, weekEvents]) => {
-      html += `<h3 style="color: #93c5fd; font-size: 15px; margin-top: 24px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px dashed #4a4a4a; padding-bottom: 4px;">📅 ${weekName}</h3>`;
-      html += `<ul class="event-list" style="margin-bottom: 16px;">`;
-      weekEvents.forEach(event => {
-        const dateDisplay = event.endDate 
-          ? `${event.date} to ${event.endDate}` 
-          : event.date;
-        
-        html += `
-          <li class="event-item">
-            <div class="event-date">${safeStr(dateDisplay)}</div>
-            <h3 class="event-name">${safeStr(event.name)}</h3>
-          </li>`;
-      });
-      html += `</ul>`;
-    });
+    html += `</ul>`;
   }
 
   // Scraped Emails Section
@@ -143,7 +125,7 @@ export async function processCalendarReminders(scrapedEmails = []) {
   // 1. Monthly Overview (Trigger on the 1st of the month)
   if (dayOfMonth === 1 || process.env.FORCE_RUN === 'true') {
     console.log("Triggering Overview (Monthly/Forced)...");
-    const upcomingEvents = await getUpcomingEvents(365); // Changed to 365 to include all events
+    const upcomingEvents = await getUpcomingEvents(7);
     if (upcomingEvents.length > 0 || scrapedEmails.length > 0 || process.env.FORCE_RUN === 'true') {
       const html = formatCalendarOverviewHtml('Monthly Academic Overview', upcomingEvents, scrapedEmails);
       await sendToGroup('Monthly Academic Overview', html);
