@@ -1,8 +1,9 @@
-import { ImapFlow } from 'imapflow';
-import { simpleParser } from 'mailparser';
 import 'dotenv/config';
 
 export const fetchUnreadEmails = async () => {
+  // Dynamic imports to avoid hanging at startup
+  const { ImapFlow } = await import('imapflow');
+  const { simpleParser } = await import('mailparser');
   const { SENDER_EMAIL, APP_PASSWORD } = process.env;
   if (!SENDER_EMAIL || !APP_PASSWORD) {
     throw new Error('SENDER_EMAIL or APP_PASSWORD not defined in environment variables');
